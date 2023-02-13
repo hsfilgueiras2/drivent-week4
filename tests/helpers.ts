@@ -12,6 +12,7 @@ export async function cleanDb() {
   await prisma.enrollment.deleteMany({});
   await prisma.event.deleteMany({});
   await prisma.session.deleteMany({});
+  await prisma.booking.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.ticketType.deleteMany({});
   await prisma.room.deleteMany({});
@@ -19,10 +20,10 @@ export async function cleanDb() {
 }
 
 export async function generateValidToken(user?: User) {
-  const incomingUser = user || (await createUser());
+  const incomingUser = (user !== undefined) ? user : (await createUser());
   const token = jwt.sign({ userId: incomingUser.id }, process.env.JWT_SECRET);
 
-  await createSession(token);
+  await createSession(token, incomingUser.id);
 
   return token;
 }
